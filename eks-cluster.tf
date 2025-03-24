@@ -10,6 +10,10 @@ resource "aws_eks_cluster" "eks-cluster" {
   access_config {
     authentication_mode = var.accessConfig
   }
+
+  tags = {
+    "eks.amazonaws.com/compute-type" = "ec2"  # Garante que não será "Fargate" Auto Mode
+  }
 }
 
 resource "aws_eks_addon" "kube_proxy" {
