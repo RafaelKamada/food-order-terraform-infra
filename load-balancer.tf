@@ -4,6 +4,8 @@ resource "aws_lb" "food_order_lb" {
   load_balancer_type = "network"
   subnets            = aws_subnet.private_subnets[*].id
 
+  security_groups    = ["sg-0ce8ac3d76f4eb002"]
+
   enable_deletion_protection = false
 
   tags = {
