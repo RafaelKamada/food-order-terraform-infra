@@ -1,3 +1,16 @@
+resource "kubernetes_config_map" "db_config" {
+  metadata {
+    name = "db-config"
+  }
+  data = {
+    "DB_CONNECTION_STRING" = "Host=food-order-db.cpqtqlmpyljc.us-east-1.rds.amazonaws.com;Port=5432;Database=foodorderdb;Username=postgres;***"
+  }
+  depends_on = [
+    aws_eks_cluster.eks-cluster,
+    aws_eks_node_group.eks-node
+  ]
+}
+
 resource "kubernetes_deployment" "api" {
   metadata {
     name = "api-deployment"
@@ -44,11 +57,14 @@ resource "kubernetes_deployment" "api" {
                 key  = "DB_CONNECTION_STRING"
               }
             }
-          }          
+          }
         }
       }
     }
   }
+  depends_on = [
+    kubernetes_config_map.db_config
+  ]
 }
 
 resource "kubernetes_service" "api" {
@@ -66,25 +82,13 @@ resource "kubernetes_service" "api" {
 
     port {
       port        = 80
-      target_port = 9000
+      target_port = "9000"
       node_port   = 30080
     }
 
     type = "LoadBalancer"
   }
-
   depends_on = [
     kubernetes_deployment.api
   ]
-}
-
-# ConfigMap para as configurações do banco de dados
-resource "kubernetes_config_map" "db_config" {
-  metadata {
-    name = "db-config"
-  }
-
-  data = {
-    DB_CONNECTION_STRING = "Host=food-order-db.cpqtqlmpyljc.us-east-1.rds.amazonaws.com;Port=5432;Database=foodorderdb;Username=postgres;Password=postgres"
-  }
 }
