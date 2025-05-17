@@ -17,7 +17,7 @@ resource "aws_eks_cluster" "eks-cluster" {
 }
 
 resource "aws_eks_addon" "kube_proxy" {
-  cluster_name = aws_eks_cluster.eks-cluster.name
+  cluster_name = data.aws_eks_cluster.eks-cluster.name
   addon_name   = "kube-proxy"
 }
 
