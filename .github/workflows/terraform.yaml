@@ -3,8 +3,7 @@ name: Create Infra AWS
 on:
   push:
     branches:
-      - main
-      - fase_4c
+      - fase_4
 
 env:
   REGION_DEFAULT: us-east-1
