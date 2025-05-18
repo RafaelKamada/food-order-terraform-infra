@@ -8,6 +8,77 @@ resource "kubernetes_namespace" "mongodb" {
   ]
 }
 
+# Primeiro criamos o deployment sem volume
+resource "kubernetes_deployment" "mongodb" {
+  metadata {
+    name      = "mongodb"
+    namespace = kubernetes_namespace.mongodb.metadata[0].name
+    labels = {
+      app = "mongodb"
+    }
+  }
+
+  spec {
+    replicas = 1
+
+    selector {
+      match_labels = {
+        app = "mongodb"
+      }
+    }
+
+    template {
+      metadata {
+        labels = {
+          app = "mongodb"
+        }
+      }
+
+      spec {
+        container {
+          name  = "mongodb"
+          image = "mongo:6.0.10"
+
+          resources {
+            requests = {
+              memory = "512Mi"
+              cpu    = "250m"
+            }
+            limits = {
+              memory = "1Gi"
+              cpu    = "500m"
+            }
+          }
+
+          env {
+            name  = "MONGO_INITDB_ROOT_USERNAME"
+            value = "dev_user"
+          }
+
+          env {
+            name  = "MONGO_INITDB_ROOT_PASSWORD"
+            value = var.mongodb_admin_password
+          }
+
+          port {
+            container_port = 27017
+          }
+        }
+
+        node_selector = {
+          "beta.kubernetes.io/arch" = "amd64"
+        }
+      }
+    }
+  }
+
+  depends_on = [
+    aws_eks_node_group.eks-node,
+    kubernetes_namespace.mongodb
+  ]
+}
+
+# Agora criamos o PVC, que será provisionado automaticamente
 resource "kubernetes_persistent_volume_claim" "mongodb" {
   metadata {
     name      = "mongodb-pvc"
@@ -27,11 +98,13 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
 
   depends_on = [
     aws_eks_node_group.eks-node,
-    kubernetes_namespace.mongodb
+    kubernetes_namespace.mongodb,
+    kubernetes_deployment.mongodb
   ]
 }
 
-resource "kubernetes_deployment" "mongodb" {
+# Atualizamos o deployment para usar o volume
+resource "kubernetes_deployment" "mongodb_update" {
   metadata {
     name      = "mongodb"
     namespace = kubernetes_namespace.mongodb.metadata[0].name
@@ -136,6 +209,6 @@ resource "kubernetes_service" "mongodb" {
 
   depends_on = [
     aws_eks_node_group.eks-node,
-    kubernetes_deployment.mongodb
+    kubernetes_deployment.mongodb_update
   ]
 }
