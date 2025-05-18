@@ -2,13 +2,8 @@ resource "kubernetes_namespace" "mongodb" {
   metadata {
     name = "mongodb"
   }
-
-  depends_on = [
-    aws_eks_node_group.workers
-  ]
 }
 
-# Configuração de rede para usar a mesma VPC e Security Group do cluster EKS
 resource "kubernetes_persistent_volume_claim" "mongodb" {
   metadata {
     name      = "mongodb-pvc"
@@ -17,7 +12,7 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
 
   spec {
     access_modes       = ["ReadWriteOnce"]
-    storage_class_name = "gp2"  # ou o storage class que você está usando
+    storage_class_name = "gp2"
 
     resources {
       requests = {
@@ -25,10 +20,6 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
       }
     }
   }
-
-  depends_on = [
-    aws_eks_node_group.workers
-  ]
 }
 
 resource "kubernetes_deployment" "mongodb" {
@@ -99,25 +90,12 @@ resource "kubernetes_deployment" "mongodb" {
           }
         }
 
-        # Configuração de rede para usar a mesma VPC e Security Group do cluster EKS
         node_selector = {
           "beta.kubernetes.io/arch" = "amd64"
-        }
-
-        toleration {
-          key      = "node-role.kubernetes.io/control-plane"
-          operator = "Exists"
-          effect   = "NoSchedule"
         }
       }
     }
   }
-
-  depends_on = [
-    aws_eks_node_group.workers,
-    kubernetes_namespace.mongodb,
-    kubernetes_persistent_volume_claim.mongodb
-  ]
 }
 
 resource "kubernetes_service" "mongodb" {
@@ -141,48 +119,4 @@ resource "kubernetes_service" "mongodb" {
 
     type = "LoadBalancer"
   }
-
-  depends_on = [
-    aws_eks_node_group.workers,
-    kubernetes_namespace.mongodb,
-    kubernetes_deployment.mongodb
-  ]
-}
-
-# Configuração adicional para permitir acesso do cluster EKS
-resource "kubernetes_network_policy" "mongodb" {
-  metadata {
-    name      = "allow-eks-access"
-    namespace = kubernetes_namespace.mongodb.metadata[0].name
-  }
-
-  spec {
-    policy_types = ["Ingress"]
-    pod_selector {
-      match_labels = {
-        app = "mongodb"
-      }
-    }
-
-    ingress {
-      from {
-        namespace_selector {
-          match_labels = {
-            name = var.eks_cluster_db
-          }
-        }
-      }
-
-      ports {
-        port     = 27017
-        protocol = "TCP"
-      }
-    }
-  }
-
-  depends_on = [
-    aws_eks_node_group.workers,
-    kubernetes_namespace.mongodb,
-    kubernetes_deployment.mongodb
-  ]
 }
