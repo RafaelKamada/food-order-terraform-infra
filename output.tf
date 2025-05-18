@@ -24,9 +24,3 @@ output "mongodb_database" {
   description = "Nome do banco de dados do MongoDB"
   value = "FoodOrder_Cardapio"
 }
-
-output "mongodb_connection_string" {
-  description = "String de conexão completa do MongoDB"
-  value = "mongodb://${aws_db_instance.rds_postgres.username}:${var.mongodb_admin_password}@${kubernetes_service.mongodb.status[0].load_balancer[0].ingress[0].hostname}:27017/FoodOrder_Cardapio"
-  sensitive = true
-}
