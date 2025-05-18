@@ -2,6 +2,10 @@ resource "kubernetes_namespace" "mongodb" {
   metadata {
     name = "mongodb"
   }
+
+  depends_on = [
+    aws_eks_node_group.eks-node
+  ]
 }
 
 resource "kubernetes_persistent_volume_claim" "mongodb" {
@@ -20,6 +24,11 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
       }
     }
   }
+
+  depends_on = [
+    aws_eks_node_group.eks-node,
+    kubernetes_namespace.mongodb
+  ]
 }
 
 resource "kubernetes_deployment" "mongodb" {
@@ -96,6 +105,11 @@ resource "kubernetes_deployment" "mongodb" {
       }
     }
   }
+
+  depends_on = [
+    aws_eks_node_group.eks-node,
+    kubernetes_persistent_volume_claim.mongodb
+  ]
 }
 
 resource "kubernetes_service" "mongodb" {
@@ -119,4 +133,9 @@ resource "kubernetes_service" "mongodb" {
 
     type = "LoadBalancer"
   }
+
+  depends_on = [
+    aws_eks_node_group.eks-node,
+    kubernetes_deployment.mongodb
+  ]
 }
