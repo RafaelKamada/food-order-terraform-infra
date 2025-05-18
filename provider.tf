@@ -10,4 +10,8 @@ provider "kubernetes" {
     args        = ["eks", "get-token", "--cluster-name", aws_eks_cluster.eks-cluster.name]
     command     = "aws"
   }
+
+  timeouts {
+    default = "15m"
+  }
 }
