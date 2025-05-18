@@ -15,7 +15,7 @@ resource "kubernetes_deployment" "api" {
   metadata {
     name = "api-deployment"
     labels = {
-      app = "api-pod"
+      app = "api-cardapio"
     }
   }
 
@@ -24,21 +24,21 @@ resource "kubernetes_deployment" "api" {
 
     selector {
       match_labels = {
-        app = "api-pod"
+        app = "api-cardapio"
       }
     }
 
     template {
       metadata {
         labels = {
-          app = "api-pod"
+          app = "api-cardapio"
         }
       }
 
       spec {
         container {
-          name  = "api-pod-cardapio"
-          image = "vilacaro/api:v4.3"
+          name  = "api-cardapio"
+          image = "japamanoel/foodorder_cardapio:latest"
 
           port {
             container_port = 9000
@@ -71,13 +71,13 @@ resource "kubernetes_service" "api" {
   metadata {
     name = "api-svc"
     labels = {
-      app = "api-svc"
+      app = "api-cardapio"
     }
   }
 
   spec {
     selector = {
-      app = "api-pod"
+      app = "api-cardapio"
     }
 
     port {
