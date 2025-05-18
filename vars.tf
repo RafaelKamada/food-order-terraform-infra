@@ -39,10 +39,37 @@ variable "environment" {
   default = "Production-2"
 }
 
-variable "cluster_ca_certificate" {
-  default = "aws_eks_cluster.eks-cluster.certificate_authority[0].data"
+
+# Variáveis MongoDB
+variable "mongodb_name" {
+  default = "food-order-mongodb"
 }
 
-variable "host" {
-  default = "aws_eks_cluster.eks-cluster.endpoint"
+variable "mongodb_instance_type" {
+  default = "db.t3.small"
+}
+
+variable "mongodb_allocated_storage" {
+  default = 20
+}
+
+variable "mongodb_backup_retention_period" {
+  default = 7
+}
+
+variable "mongodb_subnet_group_name" {
+  description = "Nome do Subnet Group criado na infraestrutura principal"
+  default = "rds_subnet_group"  # Mantendo o mesmo padrão do RDS
+}
+
+variable "mongodb_admin_password" {
+  description = "Password for MongoDB admin user (only for development)"
+  type        = string
+  sensitive   = true
+  default     = "dev123"  # Senha simples para ambiente de desenvolvimento
+}
+
+variable "eks_cluster_db" {
+  description = "Nome do cluster EKS"
+  default     = "EKS-FOOD-ORDER-DB"
 }
