@@ -3,13 +3,22 @@ resource "aws_security_group" "sg" {
   description = "Security Group do Food Order API"
   vpc_id      = aws_vpc.main_vpc.id
 
-  # Permitir tráfego do API Gateway para o Load Balancer
+  # Permitir comunicação do Load Balancer com o MongoDB
   ingress {
-    description = "HTTP from API Gateway"
-    from_port   = 80
-    to_port     = 80
+    description = "Allow MongoDB access"
+    from_port   = 27017
+    to_port     = 27017
     protocol    = "tcp"
-    cidr_blocks = [aws_vpc.main_vpc.cidr_block]
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Permitir comunicação do PostgreSQL
+  ingress {
+    description = "Allow PostgreSQL access"
+    from_port   = 5432
+    to_port     = 5432
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
   }
 
   # Permitir comunicação entre nodes do EKS
@@ -19,24 +28,6 @@ resource "aws_security_group" "sg" {
     to_port     = 0
     protocol    = "-1"
     self        = true
-  }
-
-  # Permitir comunicação do Load Balancer com os nodes
-  ingress {
-    description = "Allow LB to nodes communication"
-    from_port   = 80
-    to_port     = 80
-    protocol    = "tcp"
-    self        = true
-  }
-
-  # Permitir comunicação do Load Balancer com o MongoDB
-  ingress {
-    description = "Allow MongoDB access"
-    from_port   = 27017
-    to_port     = 27017
-    protocol    = "tcp"
-    cidr_blocks = ["0.0.0.0/0"]
   }
 
   ingress {
