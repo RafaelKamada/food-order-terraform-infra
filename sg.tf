@@ -30,6 +30,15 @@ resource "aws_security_group" "sg" {
     self        = true
   }
 
+  # Permitir comunicação do Load Balancer com o MongoDB
+  ingress {
+    description = "Allow MongoDB access"
+    from_port   = 27017
+    to_port     = 27017
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
   ingress {
     description = "Allow worker nodes to communicate with control plane"
     from_port   = 443
