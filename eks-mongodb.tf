@@ -94,6 +94,12 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
         storage = "20Gi"
       }
     }
+
+    selector {
+      match_labels = {
+        app = "mongodb"
+      }
+    }
   }
 
   depends_on = [
@@ -103,7 +109,7 @@ resource "kubernetes_persistent_volume_claim" "mongodb" {
   ]
 }
 
-# Atualizamos o deployment para usar o volume
+# Agora atualizamos o deployment para usar o volume
 resource "kubernetes_deployment" "mongodb_update" {
   metadata {
     name      = "mongodb"
