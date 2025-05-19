@@ -39,6 +39,6 @@ resource "aws_subnet" "private_subnets" {
 data "aws_security_group" "existing" {
   name = "SG-EKS-FOOD-ORDER-DB"
   tags = {
-    Name = "SG-${var.projectName}"
+    Name = "SG-EKS-FOOD-ORDER-DB"
   }
 }
