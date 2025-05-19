@@ -1,7 +1,12 @@
 # Outputs para MongoDB
 output "mongodb_endpoint" {
   description = "Endpoint do MongoDB no EKS"
-  value = kubernetes_service.mongodb.status[0].load_balancer[0].ingress[0].hostname
+  value = module.mongodb.mongodb_service_ip
+}
+
+output "mongodb_namespace" {
+  description = "Namespace do MongoDB"
+  value = module.mongodb.mongodb_namespace
 }
 
 output "mongodb_port" {
