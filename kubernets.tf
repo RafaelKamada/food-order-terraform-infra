@@ -10,7 +10,7 @@ resource "kubernetes_config_map" "db_config" {
     aws_eks_node_group.eks-node
   ]
 }
-
+ 
 resource "kubernetes_deployment" "api" {
   metadata {
     name = "api-deployment"
