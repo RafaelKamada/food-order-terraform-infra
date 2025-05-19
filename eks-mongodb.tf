@@ -9,7 +9,7 @@ resource "kubernetes_namespace" "mongodb" {
     aws_eks_addon.coredns
   ]
 }
- 
+
 resource "kubernetes_deployment" "mongodb" {
   metadata {
     name      = "mongodb"
@@ -85,13 +85,13 @@ resource "kubernetes_deployment" "mongodb" {
         }
       }
     }
-
-    depends_on = [
-      aws_eks_cluster.eks-cluster,
-      aws_eks_node_group.eks-node,
-      aws_eks_addon.coredns
-    ]
   }
+
+  depends_on = [
+    aws_eks_cluster.eks-cluster,
+    aws_eks_node_group.eks-node,
+    aws_eks_addon.coredns
+  ]
 }
 
 resource "kubernetes_service" "mongodb" {
