@@ -11,8 +11,4 @@ provider "kubernetes" {
     command     = "aws"
   }
 
-  depends_on = [
-    aws_eks_cluster.eks-cluster,
-    aws_eks_node_group.eks-node
-  ]
 }
