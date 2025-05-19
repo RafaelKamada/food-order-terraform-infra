@@ -42,7 +42,7 @@ variable "environment" {
 
 # Variáveis MongoDB
 variable "mongodb_name" {
-  default = "food-order-mongodb"
+  default = "FoodOrder_Cardapio"
 }
 
 variable "mongodb_instance_type" {
