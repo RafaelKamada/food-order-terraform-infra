@@ -31,7 +31,7 @@ variable "policyArn" {
 }
 
 variable "security_group_id" {
-  default = "sg-0f6e2ad5619752986"
+  default = data.aws_security_group.existing.id
 }
 
 

@@ -35,3 +35,10 @@ resource "aws_subnet" "private_subnets" {
     "kubernetes.io/role/internal-elb"         = "1"
   }
 }
+
+data "aws_security_group" "existing" {
+  name = "SG-EKS-FOOD-ORDER-DB"
+  tags = {
+    Name = "SG-${var.projectName}"
+  }
+}
