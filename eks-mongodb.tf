@@ -8,7 +8,7 @@ resource "kubernetes_namespace" "mongodb" {
     aws_eks_node_group.eks-node
   ]
 }
-
+ 
 resource "kubernetes_deployment" "mongodb" {
   metadata {
     name      = "mongodb"
