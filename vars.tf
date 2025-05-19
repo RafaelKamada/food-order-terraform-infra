@@ -30,11 +30,6 @@ variable "policyArn" {
   default = "arn:aws:eks::aws:cluster-access-policy/AmazonEKSClusterAdminPolicy"
 }
 
-variable "security_group_id" {
-  default = data.aws_security_group.existing.id
-}
-
-
 variable "private_subnet_ids" {
   description = "Lista de subnets privadas"
   default     = []
