@@ -42,3 +42,7 @@ data "aws_security_group" "existing" {
     Name = "SG-EKS-FOOD-ORDER-DB"
   }
 }
+
+data "aws_eks_cluster" "cluster" {
+  name = aws_eks_cluster.eks-cluster.name
+}
