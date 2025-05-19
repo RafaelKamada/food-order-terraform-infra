@@ -8,7 +8,8 @@ resource "kubernetes_config_map" "db_config" {
   }
   depends_on = [
     aws_eks_cluster.eks-cluster,
-    aws_eks_node_group.eks-node
+    aws_eks_node_group.eks-node,
+    aws_eks_addon.coredns
   ]
 }
  
@@ -66,7 +67,8 @@ resource "kubernetes_deployment" "api" {
   }
   depends_on = [
     aws_eks_cluster.eks-cluster,
-    aws_eks_node_group.eks-node
+    aws_eks_node_group.eks-node,
+    aws_eks_addon.coredns
   ]
 }
 
