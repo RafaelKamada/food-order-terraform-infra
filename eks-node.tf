@@ -47,7 +47,7 @@ resource "aws_launch_template" "eks_launch_template" {
 
   network_interfaces {
     associate_public_ip_address = false
-    security_groups            = [data.aws_security_group.existing.id]
+    security_groups = [data.aws_security_group.existing.id]
   }
 
   tag_specifications {
