@@ -1,6 +1,7 @@
 resource "kubernetes_config_map" "db_config" {
   metadata {
     name = "db-config"
+    namespace = "default"
   }
   data = {
     "DB_CONNECTION_STRING" = "Host=food-order-db.cpqtqlmpyljc.us-east-1.rds.amazonaws.com;Port=5432;Database=foodorderdb;Username=postgres;***"
@@ -14,6 +15,7 @@ resource "kubernetes_config_map" "db_config" {
 resource "kubernetes_deployment" "api" {
   metadata {
     name = "api-deployment"
+    namespace = "default"
     labels = {
       app = "api-cardapio"
     }
@@ -63,7 +65,8 @@ resource "kubernetes_deployment" "api" {
     }
   }
   depends_on = [
-    kubernetes_config_map.db_config
+    aws_eks_cluster.eks-cluster,
+    aws_eks_node_group.eks-node
   ]
 }
 
