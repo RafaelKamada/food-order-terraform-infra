@@ -4,11 +4,6 @@ output "mongodb_endpoint" {
   value = module.mongodb.mongodb_service_ip
 }
 
-output "mongodb_namespace" {
-  description = "Namespace do MongoDB"
-  value = module.mongodb.mongodb_namespace
-}
-
 output "mongodb_port" {
   description = "Porta do MongoDB"
   value = 27017
