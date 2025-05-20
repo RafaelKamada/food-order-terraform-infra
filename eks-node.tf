@@ -2,7 +2,7 @@ resource "aws_eks_node_group" "eks-node" {
   cluster_name    = aws_eks_cluster.eks-cluster.name
   node_group_name = var.nodeGroup
   node_role_arn   = var.labRole
-  subnet_ids      = data.aws_subnets.private.ids
+  subnet_ids      = aws_subnet.private_subnets[*].id
   instance_types  = [var.instanceType]
 
   scaling_config {
@@ -16,7 +16,9 @@ resource "aws_eks_node_group" "eks-node" {
   }
 
   depends_on = [
-    aws_eks_cluster.eks-cluster
+    aws_eks_cluster.eks-cluster,
+    aws_vpc.main_vpc,
+    aws_subnet.private_subnets
   ]
 
   tags = {
@@ -47,4 +49,28 @@ resource "aws_launch_template" "eks_launch_template" {
     associate_public_ip_address = false
     security_groups = [data.aws_security_group.existing.id]
   }
+
+  tag_specifications {
+    resource_type = "instance"
+    tags = {
+      Name = "EKS-Node"
+      "kubernetes.io/cluster/${var.projectName}" = "owned"
+    }
+  }
+
+  user_data = base64encode(<<-EOF
+MIME-Version: 1.0
+Content-Type: multipart/mixed; boundary="==BOUNDARY=="
+
+--==BOUNDARY==
+Content-Type: text/x-shellscript; charset="us-ascii"
+
+#!/bin/bash
+/etc/eks/bootstrap.sh ${aws_eks_cluster.eks-cluster.name} \
+  --b64-cluster-ca ${aws_eks_cluster.eks-cluster.certificate_authority[0].data} \
+  --apiserver-endpoint ${aws_eks_cluster.eks-cluster.endpoint}
+
+--==BOUNDARY==--
+EOF
+  )
 }

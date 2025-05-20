@@ -1,38 +1,48 @@
-# Data source para a VPC existente
-data "aws_vpc" "existing" {
-  id = "vpc-0ac67343fd6d2d069"  # Mantenha o ID da sua VPC existente
-}
+resource "aws_vpc" "main_vpc" {
+  cidr_block = "172.31.0.0/16"
 
-# Data source para as sub-redes privadas existentes
-data "aws_subnets" "private" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.existing.id]
-  }
-  filter {
-    name   = "tag:kubernetes.io/role/internal-elb"
-    values = ["1"]
+  tags = {
+    Name        = "Main VPC"
+    Environment = "production"
   }
 }
 
-# Data source para as sub-redes públicas existentes
-data "aws_subnets" "public" {
-  filter {
-    name   = "vpc-id"
-    values = [data.aws_vpc.existing.id]
-  }
-  filter {
-    name   = "tag:kubernetes.io/role/elb"
-    values = ["1"]
+resource "aws_subnet" "public_subnets" {
+  count                   = 2
+  vpc_id                  = aws_vpc.main_vpc.id
+  cidr_block              = cidrsubnet("172.31.0.0/16", 4, count.index + 2)
+  availability_zone       = element(["us-east-1a", "us-east-1b"], count.index)
+  map_public_ip_on_launch = true
+
+  tags = {
+    Name        = "Public Subnet ${count.index + 1}"
+    Environment = "public"
+    "kubernetes.io/cluster/${var.projectName}" = "shared"
+    "kubernetes.io/role/elb"                   = "1"
   }
 }
 
-# Data source para o security group existente
+resource "aws_subnet" "private_subnets" {
+  count             = 2
+  vpc_id            = aws_vpc.main_vpc.id
+  cidr_block        = cidrsubnet("172.31.0.0/16", 4, count.index)
+  availability_zone = element(["us-east-1a", "us-east-1b"], count.index)
+
+  tags = {
+    Name        = "Private Subnet ${count.index + 1}"
+    Environment = "private"
+    "kubernetes.io/cluster/${var.projectName}" = "shared"
+    "kubernetes.io/role/internal-elb"         = "1"
+  }
+}
+
 data "aws_security_group" "existing" {
   name = "SG-EKS-FOOD-ORDER-DB"
+  tags = {
+    Name = "SG-EKS-FOOD-ORDER-DB"
+  }
 }
 
-# Data source para o cluster EKS
 data "aws_eks_cluster" "cluster" {
   name = aws_eks_cluster.eks-cluster.name
 }
