@@ -4,7 +4,7 @@ resource "aws_eks_cluster" "eks-cluster" {
   
   vpc_config {
     subnet_ids         = aws_subnet.private_subnets[*].id
-    security_group_ids = [data.aws_security_group.existing.id]
+    security_group_ids = [aws_security_group.sg.id]
   }
 
   access_config {
