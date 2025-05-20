@@ -3,7 +3,7 @@ resource "aws_eks_cluster" "eks-cluster" {
   role_arn = var.labRole
   
   vpc_config {
-    subnet_ids         = data.aws_subnets.private.ids
+    subnet_ids         = aws_subnet.private_subnets[*].id
     security_group_ids = [data.aws_security_group.existing.id]
   }
 
@@ -24,6 +24,11 @@ resource "aws_eks_addon" "kube_proxy" {
 resource "aws_eks_addon" "vpc_cni" {
   cluster_name = aws_eks_cluster.eks-cluster.name
   addon_name   = "vpc-cni"
+}
+
+resource "aws_eks_addon" "eks-node-monitoring-agent" {
+  cluster_name = aws_eks_cluster.eks-cluster.name
+  addon_name   = "eks-node-monitoring-agent"
 }
 
 resource "aws_eks_addon" "coredns" {
