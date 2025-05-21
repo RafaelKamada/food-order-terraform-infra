@@ -122,3 +122,15 @@ Passos:
 
 Com essas variáveis configuradas, o Terraform poderá utilizar os recursos da AWS de forma segura, garantindo que sua infraestrutura seja criada e configurada corretamente.
 
+
+### 🗄️ Outros repos do microserviço dessa arquitetura
+- [Food Order Produção](https://github.com/diegogl12/food-order-producao)
+- [Food Order Pagamento](https://github.com/diegogl12/food-order-pagamento)
+- [Food Order Cardápio](https://github.com/RafaelKamada/foodorder-cardapio)
+- [Food Order Pedidos](https://github.com/vilacalima/food-order-pedidos)
+- [Food Order Usuários](https://github.com/RafaelKamada/FoodOrder)
+
+### 🗄️ Outros repos do Terraform/DB dessa arquitetura
+- [Food Order Terraform](https://github.com/RafaelKamada/food-order-terraform-infra)
+- [Food Order DB](https://github.com/nathaliaifurita/food-order-terraform-db)
+- [Food Order MongoDB](https://github.com/RafaelKamada/food-order-terraform-mongodb)
